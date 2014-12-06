@@ -1,0 +1,12 @@
+#/usr/bin/sh
+
+images=`ls roi*NA*.png`
+
+
+for i in "${images[@]}"
+do
+   :
+  convert $i -rotate 90 ../img2/$i 
+done
+
+

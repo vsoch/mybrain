@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>MyBrain Networks</title>
+
+<head>
+  <link type="text/css" rel="stylesheet" href="css/mybrain.css"/>
+  <script src="js/d3.v3.min.js"></script>
+  <script src="js/dimple.v2.1.0.min.js"></script> 
+</head>
+
+<body>
+
+  <div id="rightPanel">
+     <h3>Selection</h3>
+     <button onclick="absValue()">Absolute Value</button><br> 
+     <div id="stats">
+       Mean:<span id = "meany">0.0</span><br>
+       Min:<span id = "minny">0.0</span><br>
+       Max:<span id = "maxy">0.0</span><br>
+     </div>
+
+    <!-- Let the user select different networks, etc -->
+    <form role="form">
+      <div class="form-group">
+         <input type="checkbox" class="btn btn-success" id="show_positive" checked> Show Positive<br>
+      </div>
+      <div class="form-group">
+         <input type="checkbox" class="btn btn-success" id="show_negative" checked> Show Negative<br>     
+      </div>
+    <!--<button class="btn btn-success" id="save_as_svg" value="" onclick="save_svg()">Save as SVG</button>-->
+    </form>
+
+
+     <img src="img/dummy.png" width="150px" /><br>
+     <!--<span id = "x">0.0</span>
+     <span id = "y">0.0</span>
+     <span id = "z">0.0</span>-->
+  </div>
+
+  <container>
+    <h1>MyBrain Functional Connectome</h1>
+    <h2>Things (Possibly) Connected to Other Things</h2>
+  </container>
+  <div id="chartContainer"></div>
+
+</body>
+
+<script src="http://d3js.org/d3.v3.min.js"></script>
+<script type ="text/javascript" src="js/mybrain.js"></script>
+
+</html>

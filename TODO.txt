@@ -1,0 +1,5 @@
+# Documentation about input data
+# remove color from input data, regenerate, we don't need it
+# bug: clicking legend and then moving needs to reset
+# negative value button doesn't work in absolute value mode
+# add print to svg button?
