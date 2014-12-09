@@ -1,23 +1,65 @@
-// Get variables from the URL
-function getUrlVars() {
-    var vars = {};
-    var parts = window.location.href.replace(/[?&]+([^=&]+)=([^&]*)/gi, function(m,key,value) {
-        vars[key] = value.replace("/","");
-    });
-    return vars;
-}
+// Set up SVG plot dimensions, margins
+var margin = {top: 20, right: 20, bottom: 30, left: 40},
+     width = 1000 - margin.left - margin.right
+     height = 835 - margin.top - margin.bottom
 
-//Get json name from the browser url
-var url_data = getUrlVars()
+// add the graph canvas to the body of the webpage
+var brain = d3.select("#centerPanelBottom").append("svg")
+    .attr("class","brain")
+    .attr("width", width + margin.left + margin.right)
+    .attr("height", height + margin.top + margin.bottom)
+  .append("g")
+    .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
-var xmin = -1;
+// add the tooltip area to the webpage!
+var tooltip = d3.select("body").append("div")
+  .attr("class", "tooltip")
+  .style("opacity", 0);
 
-// If the user wants to see absolute value of data
-if (url_data["abs"] == 1){ var xmin= 0; };
+// Draw buttons and sliders just once
+d3.csv("data/mds_nodes.csv", function(error, nodes) {
 
-// Read in data from csv
-data = d3.csv("data/corr_meandatamds.csv", function(data) {
-  
+    // Network names
+    var network_names = [];
+
+    var color = d3.scale.category20();
+
+    nodes.forEach(function(d) {
+      network_names[d.network_id-1] = d.network
+    })
+
+    // For each network_names, append a button!
+    d3.select("#centerPanelTop").append("div")
+     .attr("class","btn-group arrActiviteit arrUpdate")
+     .attr("data-toggle","buttons")
+     .selectAll("button")
+     .data(network_names).enter()
+     .append("button")
+       .style("position","relative")
+       .style("white-space","normal")
+       .style("width","71px")
+       .style("height","90px")
+       .style("color","black")
+       .style("background-image",function(d){ 
+          return "linear-gradient(to bottom, #FFF 0px, " + color(d) + " 100%)"})
+       .style("font-size","10px")
+       .attr("type","button")
+       // When any button is clicked, we update visualizations
+       .attr("onclick","update_connections()")
+       .attr("class",function(d) { return "btn btn-default btn-xs " + d + " active" })
+       .text(function(d){ return d })
+
+});
+
+// Call initial function to read data from csv
+update_data()
+
+// The entire thing is wrapped in a function to re-read the data
+function update_data() {  
+  data = d3.csv("data/mds_data.csv", function(data) {
+
+  var networks = [];
+
   data.forEach(function(d) {
     d.x1 = +d.x1
     d.x2 = +d.x2
@@ -32,254 +74,83 @@ data = d3.csv("data/corr_meandatamds.csv", function(data) {
     d.mdsy1 = +d.mdsy1
     d.mdsx2 = +d.mdsx2
     d.mdsy2 = +d.mdsy2
+    networks.push(d.network1)
+    // The network_pair id will correspond to network_pair
+    // list, the groups in histogram down left side. "1,2"
+    d.network_pair_id = [d.network_id1,d.network_id2].sort().join()
   })
+
+  var minval = d3.min(data,function(d){ return d.corr })
+  var maxval = d3.max(data,function(d){ return d.corr })
+
+  networks = d3.set(networks)
+  //network_pairs = []
+  // Network pairs, based on numbers
+  // TODO: read 14 from data, number of networks
+  //for (i = 1; i <= 14; i++) {
+  //  for (j = 1; j <= 14; j++) {
+  //     network_pairs.push([i + "," + j])
+  //  } 
+  //}
+
+ //d3.selectAll(".tooltip").remove()
+  d3.selectAll("line.connection").remove()
   
-  // HISTOGRAM ------------------------------------------------------
-  var formatCount = d3.format(",.0f");
+  // Get the active buttons - the CHOSEN ONES
+  chosen = []
+  activebuttons = d3.selectAll("button.active")
+    .each(function(button){ chosen.push(button); })
+  
+  // Filter data to THE CHOSEN ONES
+  data = data.filter(function(d){ 
+    if ($.inArray(d.network1, chosen) > -1 || $.inArray(d.network2, chosen) > -1) { return true }})
 
-  var margin = {top: 10, right: 30, bottom: 30, left: 30},
-      width = 1100 - margin.left - margin.right,
-      height = 150 - margin.top - margin.bottom;
-
-  var x = d3.scale.linear()
-      .domain([xmin, 1])
-      .range([0, width]);
-
-  // Fill in stats to reflect initial selection
-  update_connections([.6,.65]);
-
-  // Generate a histogram using twenty uniformly-spaced bins.
-  var histogram = d3.layout.histogram()
-      .bins(x.ticks(20))
-      .value(function(d) {
-        if (xmin == 0) { return Math.abs(d.corr);}
-        else { return d.corr;}
-      })
-      (data)
-
-  var y = d3.scale.linear()
-      .domain([0, d3.max(histogram, function(d) { return d.y; })])
-      .range([height, 0]);
-
-  var xAxis = d3.svg.axis()
-      .scale(x)
-      .orient("bottom");
-
-  var svg = d3.select("container").append("svg")
-      .attr("class","histogram")
-      .attr("width", width + margin.left + margin.right)
-      .attr("height", height + margin.top + margin.bottom)
-    .append("g")
-      .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
-
-   function getTitle() {
-     if (xmin==-1) { return "Functional Correlations" }
-     else { return "Absolute Value of Functional Correlations"}
-   }
-
-     svg.append("svg:text")
-           .attr("class", "title")
-           .attr("dy","10em")
-           .attr("x", 700)
-	   .attr("y", -80)
-	   .text(getTitle());
-
-
-  var bar = svg.selectAll(".bar")
-      .data(histogram)
-    .enter().append("g")
-      .attr("class", "bar")
-      .attr("transform", function(d) { return "translate(" + x(d.x) + "," + y(d.y) + ")"; });
-
-  bar.append("rect")
-      .attr("x", 2)
-      .attr("width", x(histogram[0].x + histogram[0].dx) - 1)
-      .attr("height", function(d) { return height - y(d.y); });
-
-  bar.append("text")
-      .attr("dy", ".75em")
-      .attr("y", -10)
-      .attr("x", x(histogram[0].x + histogram[0].dx) / 2)
-      .attr("text-anchor", "middle")
-      .style("fill","black")
-      .text(function(d) { return formatCount(d.y); });
-
-  svg.append("g")
-      .attr("class", "x axis")
-      .attr("transform", "translate(0," + height  + ")")
-      .call(xAxis);
-
-
-  // BRUSHING -------------------------------------------------------------------
-  var color = d3.scale.category20();
-  console.log(color);
-  var brush = d3.svg.brush()
-    .x(x)
-    // This is how we do a custom "extent"
-    .extent([.6, .65])
-    .on("brushstart", brushstart)
-    .on("brush", brushmove)
-    .on("brushend", brushend);
-
-  var arc = d3.svg.arc()
-    .outerRadius(5)
-    .startAngle(0)
-    .endAngle(function(d, i) { return i ? -Math.PI : Math.PI; });
-
-  var brushg = svg.append("g")
-      .attr("class", "brush")
-      .call(brush);
-
-  brushg.selectAll(".resize").append("path")
-    .attr("transform", "translate(0," +  height / 2 + ")")
-    .attr("d", arc);
-
-  brushg.selectAll("rect")
-      .attr("height", height);
-
-  brushstart();
-  brushmove();
-
-  function brushstart() {
-    svg.classed("selecting", true);
+  // Make sure to only show what is selected
+  if ( document.getElementById('show_negative').checked === true ) {
+     d3.selectAll(".negative")        
+    .attr("stroke-opacity",0.4);
+  }
+  else {
+    d3.selectAll(".negative")        
+    .attr("stroke-opacity",0);
   }
 
-  function brushmove() {
-    var s = brush.extent();
-
-    // Here we need to run a function to change visual for "stats"
-    update_connections(s);    
-
-    // Make sure to only show what is selected
-    if ( document.getElementById('show_negative').checked === true ) {
-       d3.selectAll(".negative")        
-      .attr("stroke-opacity",0.4);
-    }
-    else {
-      d3.selectAll(".negative")        
-      .attr("stroke-opacity",0);
-    }
-
-    if ( document.getElementById('show_positive').checked === true ) {
-       d3.selectAll(".positive")        
-      .attr("stroke-opacity",0.4);
-    }
-    else {
-      d3.selectAll(".positive")        
-      .attr("stroke-opacity",0);
-    }
-
-
-    bar.classed("selected", function(d) { 
-       return s[0] <= d.corr && d.corr <= s[1]; });
+  if ( document.getElementById('show_positive').checked === true ) {
+     d3.selectAll(".positive")        
+    .attr("stroke-opacity",0.4);
+  }
+  else {
+    d3.selectAll(".positive")        
+    .attr("stroke-opacity",0);
   }
 
-  function brushend() {
-    svg.classed("selecting", !d3.event.target.empty());
-  }
-
-  // COLORING / LINE FUNCTIONS -------------------------------------------------------
+    
+   // COLORING / LINE FUNCTIONS  
+   var formatCount = d3.format(",.0f");
+   var color = d3.scale.category20();
 
   // Will return an line thickness value that reflects the strength of the connection
   var strength = d3.scale.linear()
     .range([0, 3]) // or use hex values
     .domain([0.0, 0.8]);
 
-  // SUMMARY STATS -------------------------------------------------------------------
-
-  function update_connections(s){
-
-    // Select data that is in range of s
-    var lower = +s[0];
-    var upper = +s[1];
-
-    // Remove old connections
-    d3.selectAll("line.connection").remove()
-
-    // Select new connections
-    filtered = data.filter(function(d) { if(d.corr >= lower && d.corr <= upper) {return true;}});    
-
-    d3.selectAll("svg.brain").append("g")
-      .attr("transform", "translate(" + margin.left + "," + margin.top + ")")
-      .selectAll("line")
-    .data(filtered)
-    .enter().append("line")
-      .attr("class",function(d) {
-         if (d.corr > 0) { return "connection positive " + d.network1 + " " + d.network2 }
-         else { return "connection negative "  + d.network1 + " " + d.network2 }} )
-      .attr("x1",function(d){ return xScale(d.mdsx1); })
-      .attr("x2",function(d){ return xScale(d.mdsx2); })
-      .attr("y1",function(d){ return yScale(d.mdsy1); })
-      .attr("y2",function(d){ return yScale(d.mdsy2); })
-      .attr("active",1)
-      .attr("stroke-width",function(d) { return strength(Math.abs(d.corr)) })
-      .attr("stroke-opacity", 0.3) 
-      .style("stroke", function(d){ return color(d.network1); })
-      .on("mouseover", function(d) {
-          tooltip.transition()
-               .duration(200)
-               .style("opacity", .9);
-          tooltip.html(d.corr)
-               .style("left", (d3.event.pageX + 5) + "px")
-               .style("top", (d3.event.pageY - 28) + "px");
-      })     
-      .on("mouseout", function(d) {
-          tooltip.transition()
-               .duration(500)
-               .style("opacity", 0);
-      });
-
-    meany = d3.mean(filtered,function(d) { 
-        if (xmin == 0) { return Math.abs(d.corr);}
-        else { return d.corr;}
-    });
-    maxy = d3.max(filtered,function(d) { 
-        if (xmin == 0) { return Math.abs(d.corr);}
-        else { return d.corr;}
-    });
-    minny = d3.min(filtered,function(d) { 
-        if (xmin == 0) { return Math.abs(d.corr);}
-        else { return d.corr;}
-     });
-    d3.select("#meany").text(meany.toFixed(3));
-    d3.select("#maxy").text(maxy.toFixed(3));
-    d3.select("#minny").text(minny.toFixed(3));
-  }
-
-  // Brain scatter plot
-
-  var margin = {top: 20, right: 20, bottom: 30, left: 40},
-     width = 1000 - margin.left - margin.right,
-     height = 800 - margin.top - margin.bottom;
-
-  // setup x 
-  var xValue = function(d) { return d.mdsx;}, // data -> value
-    xScale = d3.scale.linear().range([0, width]), // value -> display
+  // X: We switch x and y so axial slide is hotdog orientation
+  var xValue = function(d) { return d.mdsy;}, // data -> value
+    xScale = d3.scale.linear().range([0, width-150]), // value -> display
     xMap = function(d) { return xScale(xValue(d));}, // data -> display
     xAxis = d3.svg.axis().scale(xScale).orient("bottom");
 
-  // setup y
-  var yValue = function(d) { return d.mdsy;}, // data -> value
-    yScale = d3.scale.linear().range([height, 0]), // value -> display
-    yMap = function(d) { return yScale(yValue(d));}, // data -> display
+  // Y
+  var yValue = function(d) { return d.mdsx;}, 
+    yScale = d3.scale.linear().range([height, 0]), 
+    yMap = function(d) { return yScale(yValue(d));}, 
     yAxis = d3.svg.axis().scale(yScale).orient("left");
 
   // We will color by the network
   var cValue = function(d) { return d.network;},
      color = d3.scale.category20();
 
-  // add the graph canvas to the body of the webpage
-  var brain = d3.select("container").append("svg")
-    .attr("class","brain")
-    .attr("width", width + margin.left + margin.right)
-    .attr("height", height + margin.top + margin.bottom)
-  .append("g")
-    .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
-
-  // add the tooltip area to the webpage!
-  var tooltip = d3.select("body").append("div")
-    .attr("class", "tooltip")
-    .style("opacity", 0);
+  var brain = d3.selectAll("svg.brain")
 
   // load network nodes data
   d3.csv("data/mds_nodes.csv", function(error, nodes) {
@@ -296,8 +167,6 @@ data = d3.csv("data/corr_meandatamds.csv", function(data) {
       network_names[d.network_id-1] = d.network
     })
 
-    console.log(network_names);
-
     // don't want dots overlapping axis, so add in buffer to data domain
     xScale.domain([d3.min(nodes, xValue)-1, d3.max(nodes, xValue)+1]);
     yScale.domain([d3.min(nodes, yValue)-1, d3.max(nodes, yValue)+1]);
@@ -306,30 +175,48 @@ data = d3.csv("data/corr_meandatamds.csv", function(data) {
     brain.append("g")
       .attr("class", "x axis")
       .attr("transform", "translate(0," + height + ")")
-      .call(xAxis)
+      // The MDS coordinates don't add anything - remove them
+      //.call(xAxis)
     .append("text")
       .attr("class", "label")
-      .attr("x", width)
-      .attr("y", -6)
+      .attr("y", -10)
+      .attr("x",900)
       .style("text-anchor", "end")
       .text("Projection 1");
 
   // y-axis
   brain.append("g")
       .attr("class", "y axis")
-      .call(yAxis)
+      // The MDS coordinates don't add anything - remove them
+      //.call(yAxis)
     .append("text")
       .attr("class", "label")
       .attr("transform", "rotate(-90)")
-      .attr("y", 6)
+      .attr("y", -6)
       .attr("dy", ".71em")
       .style("text-anchor", "end")
       .text("Projection 2");
 
-  // Draw initial connections between points
-  selected = data.filter(function(d){
-    if ( d.corr >= .6 && d.corr <= .65) {return true;}   
-  });
+   // Figure out threshold from slider
+   var thresh =  +d3.selectAll(".thresh").text()
+   
+   // Figure out the direction
+   var direction =  d3.selectAll(".dir").text()
+   
+   // Filter data
+   selected = data.filter(function(d){
+      if (direction == ">"){if (d.corr >= +thresh) { return true }}
+      else {if (d.corr <= +thresh){ return true}}
+   });
+
+  // Update counts and stats
+  d3.selectAll(".totalconn").text(selected.length)
+  maxy = d3.max(selected,function(d){ return d.corr})
+  minny = d3.min(selected,function(d){ return d.corr})
+  meany = d3.mean(selected,function(d){ return d.corr})
+  d3.selectAll("#maxy").text(maxy.toFixed(2))
+  d3.selectAll("#minny").text(minny.toFixed(2))
+  d3.selectAll("#meany").text(meany.toFixed(2))
   
   // Add initial brain connections
   d3.selectAll("svg.brain").append("g")
@@ -340,10 +227,11 @@ data = d3.csv("data/corr_meandatamds.csv", function(data) {
       .attr("class",function(d) {
          if (d.corr > 0) { return "connection positive " + d.network1 + " " + d.network2 }
          else { return "connection negative "  + d.network1 + " " + d.network2  }} )
-      .attr("x1",function(d){ return xScale(d.mdsx1); })
-      .attr("x2",function(d){ return xScale(d.mdsx2); })
-      .attr("y1",function(d){ return yScale(d.mdsy1); })
-      .attr("y2",function(d){ return yScale(d.mdsy2); })
+      // We switch x and y so axial slide is hotdog orientation
+      .attr("x1",function(d){ return xScale(d.mdsy1); })
+      .attr("x2",function(d){ return xScale(d.mdsy2); })
+      .attr("y1",function(d){ return yScale(d.mdsx1); })
+      .attr("y2",function(d){ return yScale(d.mdsx2); })
       .attr("active",1)
       .attr("stroke-width",function(d) { return strength(Math.abs(d.corr)) })
       .attr("stroke-opacity", 0.3) 
@@ -362,8 +250,6 @@ data = d3.csv("data/corr_meandatamds.csv", function(data) {
                .style("opacity", 0);
       });
 
-   
-
   // draw dots
   brain.selectAll(".dot")
       .data(nodes)
@@ -372,6 +258,7 @@ data = d3.csv("data/corr_meandatamds.csv", function(data) {
       .attr("r", 8)
       .attr("cx", xMap)
       .attr("cy", yMap)
+     .attr("transform", "translate(" + margin.left + "," + margin.top + ")")
       .style("fill", function(d) { return color(cValue(d));}) 
       .on("mouseover", function(d) {
           tooltip.transition()
@@ -387,10 +274,6 @@ data = d3.csv("data/corr_meandatamds.csv", function(data) {
            .selectAll("img")
            .attr("src", "img/" + d.image)
 
-            // Add the xyz coordinates
-            //d3.select("#x").text(d.x.toFixed(2))
-            //d3.select("#y").text(d.y.toFixed(2))
-            //d3.select("#z").text(d.z.toFixed(2))
       })
      
       .on("mouseout", function(d) {
@@ -404,47 +287,29 @@ data = d3.csv("data/corr_meandatamds.csv", function(data) {
       .data(network_names)
     .enter().append("g")
       .attr("class", "legend")
-      .attr("transform", function(d, i) { return "translate(100," + i * 16 + ")"; });
+      .attr("transform", function(d, i) { return "translate(100," + i * 20 + ")"; });
 
   // draw legend colored rectangles
   legend.append("rect")
-      .attr("x", width - 18)
-      .attr("width", 18)
-      .attr("height", 18)
-      // on click, show or hide the network connections
-      .on("click", function(d){
-        network_nodes = d3.selectAll("." + d)
-        active_test = d3.selectAll("." + d).attr("active")
-        if (active_test == 1){
-          network_nodes.attr("stroke-opacity",0)
-          network_nodes.attr("active",0)
-          d3.select(this).style("fill","white")
-        } else {
-          network_nodes.attr("stroke-opacity",0.4)
-          network_nodes.attr("active",1)
-          d3.select(this).style("fill",color(d))
-        }
-       })
-      .style("fill", function(d){ return color(d) })
-     
+      .attr("x", width - 140)
+      .attr("width", 20)
+      .attr("height", 20)
+      .style("fill", function(d){ return color(d) })     
 
   // draw legend text
   legend.append("text")
-      .attr("x", width - 24)
+      .attr("x", width-150)
       .attr("y", 9)
       .attr("dy", ".35em")
       .style("text-anchor", "end")
       .text(function(d) { return d })
 
      });
-});
+  });
+} // close update_data
 
-// Functions outside of d3
-  function absValue(){
-    if (xmin==0) { window.location.replace('http://www.vbmis.com/bmi/project/mybrain') }
-    else { window.location.replace('http://www.vbmis.com/bmi/project/mybrain?abs=1') }
-  }
 
+// FUNCTIONS OUTSIDE OF D3 --------------------------------------------
 
 // Show positive connections
 document.getElementById('show_positive').onchange = function() {
@@ -457,7 +322,6 @@ document.getElementById('show_positive').onchange = function() {
       .attr("stroke-opacity",0);
     }
 }
-
 
 // Show negative connections
 document.getElementById('show_negative').onchange = function() {
@@ -472,4 +336,28 @@ document.getElementById('show_negative').onchange = function() {
     }
 }
 
+document.getElementById('up').onchange = function() {
+  d3.selectAll(".dir").text(">")
+  update_data()    
+}
 
+document.getElementById('down').onchange = function() {
+  d3.selectAll(".dir").text("<")
+  update_data()    
+}
+
+
+// Update data - basically reload
+function update_connections(){
+  update_data()
+}
+
+// Slider
+d3.select('#slider')
+    .call(d3.slider().axis(true).min(-1).max(1).value(0.65)
+    .on("slide", function(evt, value) {
+      d3.selectAll(".thresh").text(value.toFixed(2))
+      update_data()
+}));
+
+d3.selectAll("svg.d3-slider-axis.d3-slider-axis-bottom").style("background","none")

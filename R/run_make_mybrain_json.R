@@ -9,6 +9,7 @@ output_folder = "/home/vanessa/Documents/Dropbox/Website/mybrain/web/data"
 input_folder = "/home/vanessa/Documents/Dropbox/Website/mybrain/data"
 data_file = "data_unspaced.txt"
 parcel_file = "parcel_info_unspaced.txt"
+threshold = 0.99
 
 subfolders = list.files(input_folder,full.names=TRUE)
 source("make_mybrain_json.R")
@@ -18,9 +19,8 @@ for (folder in subfolders) {
   meta = paste(folder,"/",parcel_file,sep="")
   folder_name = strsplit(folder,"/")[[1]]
   folder_name = tolower(folder_name[length(folder_name)])
-  output_data_file = paste(output_folder,"/",folder_name,"_node.csv",sep="")
-  output_node_file = paste(output_folder,"/",folder_name,"_data.csv",sep="")
-  make_mybrain_json(meta,data,output_data_file,output_node_file)
+  output_file_prefix = paste(output_folder,"/",folder_name,sep="")
+  make_mybrain_json(meta,data,threshold,output_file_prefix)
 }
 
 

@@ -1,9 +1,10 @@
 @import url(http://fonts.googleapis.com/css?family=Yanone+Kaffeesatz:400,700);
 
 body {
+  position: relative;
   font-family: Sans-Serif;
   margin: 40px auto;
-  width: 1100px;
+  width: 1600px;
   background: url(../img/bg.jpg) no-repeat center center fixed; 
        -webkit-background-size: cover;
        -moz-background-size: cover;
@@ -13,8 +14,8 @@ body {
    
 }
 
-#body {
-  position: relative;
+#centerPanelSlider{
+  margin-bottom:100px;
 }
 
 footer {
@@ -23,13 +24,12 @@ footer {
 }
 
 h1 {
-  font-size: 96px;
-  margin-top: .3em;
+  font-size: 48px;
+  margin-top: 5px;
   margin-bottom: 0;
 }
 
 svg {
-    width: 1100px;
     background: white;
 }
 
@@ -37,15 +37,44 @@ img {
    padding-top: 25px;
 }
 
-.histogram {
-  height: 150px;
-  width: 1100px;
+#leftPanel {
+  background: white;
+  height: 995px;
+  width: 200px;
+  padding: 15px;
+  margin: 0px 5px 0px 5px;
+
 }
 
-.table {
-   width: 960px;
-   height: 500px;
-   overflow: scroll;
+.statbox {
+  background: #ccc;
+  width: 100px;
+  margin: 10px;
+  padding: 10px;
+}
+
+#titleRow {
+  margin-left: 5px;
+
+}
+
+.buttonbox {
+  width: 800px;
+  float: left;
+  position: relative;
+}
+
+.histogram {
+  height: 150px;
+}
+
+.plots {
+  height: 1000px;
+  width: 100%;
+}
+
+.brain {
+  margin-top: 8px;
 }
 
 h1 + h2 {
@@ -62,25 +91,14 @@ h1, h2 {
   text-rendering: optimizeLegibility;
 }
 
-#container > p {
-  line-height: 1.5em;
-  width: 640px;
-  text-rendering: optimizeLegibility;
+#hist_container {
 }
 
+
 #rightPanel {
-  padding: 5px;
-  padding-top:100px;
-  right: 0px;
-  float: right;
-  top: 100px;
-  position: absolute;
 }
 
 #stats {
-  background: #ccc;
-  height: 60px;
-  margin-top: 10px;
 }
 
 .bar rect {
@@ -143,19 +161,6 @@ circle.hidden {
 }
 
 
-/* Styling for 3d brain */
-.land {
-  fill: #999;
-  stroke-opacity: 1;
-}
-
-.graticule {
-  fill: none;
-  stroke: black;
-  stroke-width:.5;
-  opacity:.2;
-}
-
 .labels {
     font: 8px sans-serif;
     fill: black;
@@ -203,3 +208,15 @@ circle.hidden {
   height: 28px;
   pointer-events: none;
 }
+
+/* Slider */
+.slidey {
+  height: 10px;
+  width: 250px;
+}
+
+/* Buttons */
+.absolute:active {
+  fill: #000
+}
+/*TODO: Add button disabled to better stand out*/

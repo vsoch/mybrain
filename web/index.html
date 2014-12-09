@@ -3,49 +3,84 @@
 <title>MyBrain Networks</title>
 
 <head>
+  <!-- JQuery for Bootstrap -->
+  <script type="text/javascript" src="js/jquery-1.11.1.min.js"></script>
+  <!-- Bootstrap styling-->
+   <!-- Mobile touch zooming -->
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <!-- Bootstrap styling -->
+  <script type="text/javascript" src="js/jquery-1.11.1.min.js"></script>
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.0/css/bootstrap.min.css">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.0/css/bootstrap-theme.min.css">
+  <!-- MyBrain Styling and D3--> 
   <link type="text/css" rel="stylesheet" href="css/mybrain.css"/>
-  <script src="js/d3.v3.min.js"></script>
-  <script src="js/dimple.v2.1.0.min.js"></script> 
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.0/js/bootstrap.min.js"></script>
+  <!-- Slider -->
+  <link rel="stylesheet" href="css/d3.slider.css" />  
+
 </head>
 
 <body>
 
-  <div id="rightPanel">
-     <h3>Selection</h3>
-     <button onclick="absValue()">Absolute Value</button><br> 
-     <div id="stats">
-       Mean:<span id = "meany">0.0</span><br>
-       Min:<span id = "minny">0.0</span><br>
-       Max:<span id = "maxy">0.0</span><br>
-     </div>
+  <!-- Full width layout -->
+  <div class="container-fluid">
+  
+    <!-- Info bar at top, can eventually have navigation-->
+    <div class="row" id="titleRow">
+      <h1>MyBrain Functional Connectome</h1>
+      <h2>Things (Possibly) Connected to Other Things</h2>
+    </div>
 
-    <!-- Let the user select different networks, etc -->
-    <form role="form">
-      <div class="form-group">
-         <input type="checkbox" class="btn btn-success" id="show_positive" checked> Show Positive<br>
+    <div class="row">
+      <!-- Left panel for summary stats-->
+      <div class="col-md-2" id="leftPanel">
+        <h2>threshold</h2>
+        <div class="statbox">
+        <strong><span class="dir">></span><span class="thresh">0.6</span></strong></div>
+         <input type="radio" id="up" class="direction" name="direction" value="up" checked="checked">><br>
+         <input type="radio" id="down" name="direction" value="down" class="direction"><
+        <h2>total connections</h2>
+        <h3 class="statbox totalconn"></h3>
+        <h2>Mean:</h2>
+        <h3 class="statbox" id = "meany">0.0</h3>
+        <h2>Min:</h2>
+        <h3 class="statbox" id = "minny">0.0</h3>
+        <h2>Max:</h2>
+        <h3 class="statbox" id = "maxy">0.0</h3>
+        <!--<strong>+</strong><h3 class="statbox posconn"></h3>
+        <strong>-</strong><h3 class="statbox negconn"></h3>-->
       </div>
-      <div class="form-group">
-         <input type="checkbox" class="btn btn-success" id="show_negative" checked> Show Negative<br>     
+      <!-- Center column has brush histogram and brain -->  
+      <div class="col-md-8">
+        <div class="row" id="centerPanelTop"></div>
+        <!-- Buttons will be appended here, each within a little column-->
+        <div class="row" style="margin-top:20px;" id ="centerPanelSlider">
+           <div id="slider"></div><br><br>
+         </div>
+        <div class="row" id="centerPanelBottom"></div>
       </div>
+      <!-- Right column has controls -->
+      <div class="col-md-2" id="rightPanel">
+         <h3>Selection</h3>
+         <div id="stats">
+         <!-- Let the user select different networks, etc -->
+         <form role="form">
+           <div class="form-group">
+             <input type="checkbox" class="btn btn-success" id="show_positive" checked> Show Positive<br>
+           </div>
+         <div class="form-group">
+             <input type="checkbox" class="btn btn-success" id="show_negative" checked> Show Negative<br>     
+          </div>
     <!--<button class="btn btn-success" id="save_as_svg" value="" onclick="save_svg()">Save as SVG</button>-->
-    </form>
-
-
-     <img src="img/dummy.png" width="150px" /><br>
-     <!--<span id = "x">0.0</span>
-     <span id = "y">0.0</span>
-     <span id = "z">0.0</span>-->
-  </div>
-
-  <container>
-    <h1>MyBrain Functional Connectome</h1>
-    <h2>Things (Possibly) Connected to Other Things</h2>
-  </container>
-  <div id="chartContainer"></div>
+         </form>
+   
+         <img src="img/dummy.png" width="150px" /><br>
+      </div> <!-- Close right panel column -->
+    </div> <!-- Close main content row-->      
+  </div> <!--close container-->
 
 </body>
-
-<script src="http://d3js.org/d3.v3.min.js"></script>
+<script src="js/d3.v3.min.js"></script>
+<script type="text/javascript" src="js/d3.slider.js"></script>
 <script type ="text/javascript" src="js/mybrain.js"></script>
-
 </html>
