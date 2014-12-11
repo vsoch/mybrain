@@ -1,9 +1,13 @@
 # Make instructions interface
 # Documentation about input data
-# add print to svg button?
+# add print to svg button
 # Add gradient coloring to lines
 # add LEFT and right indicators - note images are FLIPPED
 # link to NeuroSynth
 # make brain taller
 # fix spacing issue
 # click on node?
+# clean up code!
+# need to write some kind of instruction - give insight that the connections represent probabilities.
+make sure opacity == stronger connection
+# plot labels need to not be reproduced!

@@ -49,17 +49,6 @@ thresholded = pos + neg
 image = paste("roi",formatC(meta$old_order, width=3, flag="0"),".png",sep="")
 meta$image = image
 
-# Save histogram data for positive and negative connections for all
-alldata = hist(as.matrix(data),breaks=40)
-absdata = hist(abs(as.matrix(data)),breaks=40)
-
-# We will save the entire distribution to show the viewer, but we won't be rendering the data in the browser
-histogram_all = data.frame(allcount = alldata$counts,allmid = alldata$mids)
-histogram_abs = data.frame(abscount = absdata$counts,absmid = absdata$mids)
-
-write.table(histogram_all,file=paste(output_file_prefix,"_hist_all.csv",sep=""),col.names=TRUE,row.names=FALSE,quote=FALSE,sep=",")
-write.table(histogram_abs,file=paste(output_file_prefix,"_hist_abs.csv",sep=""),col.names=TRUE,row.names=FALSE,quote=FALSE,sep=",")
-
 # These colors are from the Peterson lab - we don't use them, but I'm keeping them here in case we want them.
 color_labels = c("Default","Second-Dorsal-Attention","Ventral-Attention-Language","Second-Visual","Frontal-Parietal","Somatomotor","none","Parietal-Episodic-Retrieval","Parieto-Occipital","Cingulo-opercular","Salience","Frontal-Parietal-Other","First-Dorsal-Attention","First-Visual-V1+","Subcortical")
 colors = c("#ff2700","#d6add6","#007d7d","#393FAC","#FFFB00","#00ffff","94CD54","#CC0066","#003eff","#fbfbda","#822082","#000000","#c46b8b","#00f700","#94cd54","#CC0066")
