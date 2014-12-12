@@ -3,17 +3,10 @@
 body {
   position: relative;
   font-family: Sans-Serif;
-  margin: 40px auto;
+  margin: auto;
   width: 1600px;
-  background: url(../img/bg.jpg) no-repeat center center fixed; 
-       -webkit-background-size: cover;
-       -moz-background-size: cover;
-       -o-background-size: cover;
-       background-size: cover;    
-  }
-   
 }
-
+   
 #centerPanelSlider{
   margin-bottom:100px;
 }
@@ -30,7 +23,7 @@ h1 {
 }
 
 svg {
-    background: white;
+
 }
 
 img {
@@ -38,8 +31,7 @@ img {
 }
 
 #leftPanel {
-  background: white;
-  height: 995px;
+  height: 1200px;
   width: 200px;
   padding: 15px;
   margin: 0px 5px 0px 5px;
@@ -68,11 +60,6 @@ img {
   height: 150px;
 }
 
-.plots {
-  height: 1000px;
-  width: 100%;
-}
-
 .brain {
   margin-top: 8px;
 }
@@ -81,41 +68,20 @@ h1 + h2 {
   margin-top: 0;
 }
 
-h2 {
+h2, .mybrain {
   font-weight: 400;
   font-size: 28px;
 }
 
-h1, h2 {
+h1, h2, .mybrain {
   font-family: "Yanone Kaffeesatz";
   text-rendering: optimizeLegibility;
 }
 
-#hist_container {
+/* Active button*/
+button:active {
+  color: #FFF;
 }
-
-
-#rightPanel {
-}
-
-#stats {
-}
-
-.bar rect {
-  fill: steelblue;
-  shape-rendering: crispEdges;
-  border: 1px;
-  border-color: white;
-}
-
-.bar text {
-  fill: #fff;
-}
-
-.bar rect.selected {
-  fill: #ccc !important;
-}
-
 
 .axis path, .axis line {
   fill: none;
@@ -165,7 +131,6 @@ circle.hidden {
     font: 8px sans-serif;
     fill: black;
     opacity: .5;
-
     display:none;
 }
 
@@ -178,12 +143,7 @@ circle.hidden {
   stroke: gray;
   stroke-width: 3;
 }
-.flyers {
-  stroke-width:1;
-  opacity: .6;
-  stroke: darkred; 
-}
-.arc, .flyer {
+.arc, {
   stroke-linejoin: round;
   fill:none;
 }
@@ -215,8 +175,19 @@ circle.hidden {
   width: 250px;
 }
 
-/* Buttons */
-.absolute:active {
-  fill: #000
+/* About and welcome page*/
+.welcome {
+  padding-top: 15px;
+  padding-left: 15px;
+  margin-left: 15px;
+  margin-right: 15px;
+  height: 200px;
 }
-/*TODO: Add button disabled to better stand out*/
+
+.about {
+  padding-top: 5px;
+  padding-left: 15px;
+  margin-left: 15px;
+  margin-right: 15px;
+
+}

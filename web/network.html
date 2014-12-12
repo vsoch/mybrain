@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>MyBrain Networks</title>
+
+<head>
+  <!-- JQuery for Bootstrap -->
+  <script type="text/javascript" src="js/jquery-1.11.1.min.js"></script>
+  <!-- Bootstrap styling-->
+   <!-- Mobile touch zooming -->
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <!-- Bootstrap styling -->
+  <script type="text/javascript" src="js/jquery-1.11.1.min.js"></script>
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.0/css/bootstrap.min.css">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.0/css/bootstrap-theme.min.css">
+  <!-- MyBrain Styling and D3--> 
+  <link type="text/css" rel="stylesheet" href="css/mybrain.css"/>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.0/js/bootstrap.min.js"></script>
+  <!-- Slider -->
+  <link rel="stylesheet" href="css/d3.slider.css" />  
+
+</head>
+
+<body>
+
+<nav class="navbar navbar-default navbar-static-top" role="navigation">
+  <!-- Full width layout -->
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand mybrain" href="index.html">MyBrain Functional Connectome</a>
+    </div>
+    <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+      <ul class="nav navbar-nav">
+        <li><a href="network.html">explore<span class="sr-only"></span></a></li>     
+        <li><a href="about.html">about<span class="sr-only"></span></a></li>
+        <li><a href="http://www.github.com/vsoch/mybrain">code</a></li>
+      </ul>
+    </div><!-- /.navbar-collapse -->
+  
+</nav>
+  <div class="container-fluid">
+
+    <!-- Info bar at top, can eventually have navigation-->
+    <div class="row" id="titleRow">
+    </div>
+
+    <div class="row">
+      <!-- Left panel for summary stats-->
+      <div class="col-md-2" id="leftPanel">
+        <h2>threshold</h2>
+        <div class="statbox">
+          <strong><span class="dir">></span><span class="thresh">0.6</span></strong></div>
+          <input type="radio" id="up" class="direction" name="direction" value="up" checked="checked">><br>
+          <input type="radio" id="down" name="direction" value="down" class="direction"><
+          <h2>total connections</h2>
+          <h3 class="statbox totalconn"></h3>
+          <h2>Mean:</h2>
+          <h3 class="statbox" id = "meany">0.0</h3>
+          <h2>Min:</h2>
+          <h3 class="statbox" id = "minny">0.0</h3>
+          <h2>Max:</h2>
+          <h3 class="statbox" id = "maxy">0.0</h3>
+        </div><!-- close statbox -->
+
+      <!-- Center column has brush histogram and brain -->  
+      <div class="col-md-8">
+        <div class="row" id="centerPanelTop"></div>
+        
+        <!-- Buttons will be appended here, each within a little column-->
+        <div class="row" style="margin-top:20px;" id ="centerPanelSlider">
+          <div id="slider"></div><br><br></div>
+        
+        <!-- Brain svg will be appended here -->
+        <div class="row" id="centerPanelBottom"></div>
+      </div>
+      
+      <!-- Right column has controls -->
+      <div class="col-md-2" id="rightPanel">
+
+        <div class="panel panel-default">
+          <div class="panel-heading mybrain">Selection</div>
+            <ul class="list-group">
+
+               <!-- Interface node selection options -->
+               <li class="list-group-item">
+                 <div id="stats">
+                   <form role="form">
+                     <div class="form-group"><input type="checkbox" class="btn btn-success" id="show_positive" checked> Show Positive<br></div>
+                     <div class="form-group"><input type="checkbox" class="btn btn-success" id="show_negative" checked> Show Negative<br></div>
+                    </form>
+                </li>
+              </ul>
+
+            <!-- Buttons to save or clear selection -->
+              <div class="btn-group btn-group-justified" role="group">
+              <div class="btn-group" role="group">
+                <button class="btn btn-default" id="save_as_svg" value="" onclick="save_svg()">save svg</button>
+              </div>
+             <div class="btn-group" role="group">
+                <button class="btn btn-default" id="reset_nodes" value="" onclick="reset_nodes()">reset</button>               
+             </div>
+           </div>
+
+        </div><!-- close panel -->
+        <img src="img/dummy.png" width="150px" /><br>
+      </div> <!-- Close right panel column -->
+    </div> <!-- Close main content row-->      
+  </div> <!--close container-->
+</body>
+<script src="js/d3.v3.min.js"></script>
+<script type="text/javascript" src="js/d3.slider.js"></script>
+<script type ="text/javascript" src="js/mybrain.js"></script>
+</html>

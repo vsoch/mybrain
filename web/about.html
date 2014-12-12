@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>MyBrain Networks</title>
+
+<head>
+  <!-- JQuery for Bootstrap -->
+  <script type="text/javascript" src="js/jquery-1.11.1.min.js"></script>
+  <!-- Bootstrap styling-->
+   <!-- Mobile touch zooming -->
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <!-- Bootstrap styling -->
+  <script type="text/javascript" src="js/jquery-1.11.1.min.js"></script>
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.0/css/bootstrap.min.css">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.0/css/bootstrap-theme.min.css">
+  <!-- MyBrain Styling and D3--> 
+  <link type="text/css" rel="stylesheet" href="css/mybrain.css"/>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.0/js/bootstrap.min.js"></script>
+
+</head>
+
+<body>
+
+<nav class="navbar navbar-default navbar-static-top" role="navigation">
+  <!-- Full width layout -->
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand mybrain" href="index.html">MyBrain Functional Connectome</a>
+    </div>  
+
+  <div class="container-fluid">
+  <!-- Collect the nav links, forms, and other content for toggling -->
+    <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+      <ul class="nav navbar-nav">
+        <li><a href="network.html">explore<span class="sr-only"></span></a></li>     
+        <li><a href="about.html">about<span class="sr-only"></span></a></li>
+        <li><a href="http://www.github.com/vsoch/mybrain">code</a></li>
+      </ul>
+    </div><!-- /.navbar-collapse -->
+</nav>
+
+        <hr>
+
+        <div class="row about">
+        <h2>Overview</h2>
+            <div class="col-md-8 well">
+              <p>Functional brain imaging <a href="http://en.wikipedia.org/wiki/Neuroimaging#Functional_magnetic_resonance_imaging" target="_blank">(fMRI)</a> is a medical imaging technology that give us insight to the function of the human brain.  The datasets produced are large, and highly complex, and very challenging for researchers to explore and share.  This project is a prototype application that aims to think about how such a dataset could be interactively rendered in a web browser.  Such an interface would support easy exploration, standardization, and sharing of this functional, better empowering researchers to generate novel hypotheses to catalyze discovery in this field. 
+              </p>
+            </div>
+        </div>
+
+        <div class="row about">
+        <h2>The Technology</h2>
+            <div class="col-md-8 well">
+              <p>Data Driven Documents <a href="http://www.d3js.org" target="_blank">(D3)</a> is a JavaScript library developed with interactive visualization in mind.  It take's advantage of the web browser's built in standards for cascading style sheets <a href="http://www.w3.org/Style/CSS/Overview.en.html" target="_blank">(CSS)</a>, <a href="http://www.w3schools.com/html/html_intro.asp" target="_blank">HTML</a>, and scalable vector graphics <a href="http://en.wikipedia.org/wiki/Scalable_Vector_Graphics" target="_blank">(SVG)</a>.</b>
+            </div>
+        </div>
+
+        <div class="row about">
+        <h2>Design Challenges</h2>
+            <div class="col-md-8 well">
+              <p>Visualization of functional imaging data is incredibly challenging, and intelligent choices must be made about filtering datasets, what distance on the page should represent, and other meaningful variables like color, depth, and size.  We are making <a href="http://www.sciencedirect.com/science/article/pii/S1053811913004709" target="_blank">great progress</a> in developing these tools, but we still have a long way to go.  This project offers an exploratory prototype for a two-dimensional, interactive exploration of this data, with goals of <a href="mybrain.pdf" target="_blank">discussing</a> these design choices, and ultimately leading to a comprehensive application for researchers.</b>
+            </div>
+        </div>
+        <div class = "row about">
+            <p>
+              Copyright 2014, vsochat, <a href="http://poldracklab.stanford.edu" target="_blank">Poldracklab</a> at Stanford University </p>
+        </div>
+
+        <hr>
+    </div>
+    <!-- /.container -->
+</body>
+
+</html>

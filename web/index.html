@@ -15,72 +15,94 @@
   <!-- MyBrain Styling and D3--> 
   <link type="text/css" rel="stylesheet" href="css/mybrain.css"/>
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.0/js/bootstrap.min.js"></script>
-  <!-- Slider -->
-  <link rel="stylesheet" href="css/d3.slider.css" />  
 
 </head>
 
 <body>
 
+<nav class="navbar navbar-default navbar-static-top" role="navigation">
   <!-- Full width layout -->
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand mybrain" href="index.html">MyBrain Functional Connectome</a>
+    </div>  
+
   <div class="container-fluid">
-  
-    <!-- Info bar at top, can eventually have navigation-->
-    <div class="row" id="titleRow">
-      <h1>MyBrain Functional Connectome</h1>
-      <h2>Things (Possibly) Connected to Other Things</h2>
+  <!-- Collect the nav links, forms, and other content for toggling -->
+    <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+      <ul class="nav navbar-nav">
+        <li><a href="network.html">explore<span class="sr-only"></span></a></li>     
+        <li><a href="about.html">about<span class="sr-only"></span></a></li>
+        <li><a href="http://www.github.com/vsoch/mybrain">code</a></li>
+      </ul>
+    </div><!-- /.navbar-collapse -->
+</nav>
+
+        <!-- Jumbotron Header -->
+        <header class="jumbotron welcome">
+            <h1>Functional Brain Imaging Connectome in Your Browser!</h1>
+            <p>Interactive web technology like <a href="http://www.d3js.org" target="_blank">D3</a> is making this a possibility.  <a href="about.html">Learn more</a> about this prototype, or jump right in!</p>
+            <p><a href="network.html" class="btn btn-primary btn-large">Explore the connectome</a>
+            </p>
+        </header>
+
+        <hr>
+
+        <!-- /.row -->
+
+        <!-- Explore -->
+        <div class="row text-center">
+
+            <div class="col-md-3 col-sm-6 hero-feature">
+                <div class="thumbnail">
+                    <a href="network.html"><img href="network.html" width="300px" src="img/explore-highlight.png" alt=""></a>
+                    <div class="caption">
+                        <h3>Explore</h3>
+                        <p>Mean connectivity of an individual's functional connectome across 565 parcel regions.</p>
+                        <p>
+                            <a href="network.html" class="btn btn-primary">Explore</a>
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- About -->
+            <div class="col-md-3 col-sm-6 hero-feature">
+                <div class="thumbnail">
+                    <a href="about.html"><img href="about.html" width="300px" src="img/rainbow-orange.jpg" alt=""></a>
+                    <div class="caption">
+                        <h3>About</h3>
+                        <p>Learn more about the goals of this prototype, and the project.</p>
+                        <p>
+                            <a href="about.html" class="btn btn-primary">About</a>      </p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Code -->
+            <div class="col-md-3 col-sm-6 hero-feature">
+                <div class="thumbnail">
+                    <a href="http://www.github.com/vsoch/mybrain"><img href="http://www.github.com/vsoch/mybrain" width="300px" src="img/chosen-pink.png" alt=""></a>
+                    <div class="caption">
+                        <h3>Code</h3>
+                        <p>Learn how MyBrain is put together by exploring the codebase on github.</p>
+                        <p>
+                            <a href="http://www.github.com/vsoch/mybrain" class="btn btn-primary">Code</a>
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+        <!-- /.row -->
+        <hr>
     </div>
-
-    <div class="row">
-      <!-- Left panel for summary stats-->
-      <div class="col-md-2" id="leftPanel">
-        <h2>threshold</h2>
-        <div class="statbox">
-        <strong><span class="dir">></span><span class="thresh">0.6</span></strong></div>
-         <input type="radio" id="up" class="direction" name="direction" value="up" checked="checked">><br>
-         <input type="radio" id="down" name="direction" value="down" class="direction"><
-        <h2>total connections</h2>
-        <h3 class="statbox totalconn"></h3>
-        <h2>Mean:</h2>
-        <h3 class="statbox" id = "meany">0.0</h3>
-        <h2>Min:</h2>
-        <h3 class="statbox" id = "minny">0.0</h3>
-        <h2>Max:</h2>
-        <h3 class="statbox" id = "maxy">0.0</h3>
-        <!--<strong>+</strong><h3 class="statbox posconn"></h3>
-        <strong>-</strong><h3 class="statbox negconn"></h3>-->
-      </div>
-      <!-- Center column has brush histogram and brain -->  
-      <div class="col-md-8">
-        <div class="row" id="centerPanelTop"></div>
-        <!-- Buttons will be appended here, each within a little column-->
-        <div class="row" style="margin-top:20px;" id ="centerPanelSlider">
-           <div id="slider"></div><br><br>
-         </div>
-        <div class="row" id="centerPanelBottom"></div>
-      </div>
-      <!-- Right column has controls -->
-      <div class="col-md-2" id="rightPanel">
-         <h3>Selection</h3>
-         <div id="stats">
-         <!-- Let the user select different networks, etc -->
-         <form role="form">
-           <div class="form-group">
-             <input type="checkbox" class="btn btn-success" id="show_positive" checked> Show Positive<br>
-           </div>
-         <div class="form-group">
-             <input type="checkbox" class="btn btn-success" id="show_negative" checked> Show Negative<br>     
-          </div>
-    <!--<button class="btn btn-success" id="save_as_svg" value="" onclick="save_svg()">Save as SVG</button>-->
-         </form>
-   
-         <img src="img/dummy.png" width="150px" /><br>
-      </div> <!-- Close right panel column -->
-    </div> <!-- Close main content row-->      
-  </div> <!--close container-->
-
+    <!-- /.container -->
 </body>
-<script src="js/d3.v3.min.js"></script>
-<script type="text/javascript" src="js/d3.slider.js"></script>
-<script type ="text/javascript" src="js/mybrain.js"></script>
+
 </html>

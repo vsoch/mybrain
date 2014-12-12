@@ -1,7 +1,7 @@
 // Set up SVG plot dimensions, margins
 var margin = {top: 20, right: 20, bottom: 30, left: 40},
      width = 1000 - margin.left - margin.right
-     height = 835 - margin.top - margin.bottom
+     height = 1200 - margin.top - margin.bottom
 
 // add the graph canvas to the body of the webpage
 var brain = d3.select("#centerPanelBottom").append("svg")
@@ -17,7 +17,7 @@ var tooltip = d3.select("body").append("div")
   .style("opacity", 0);
 
 // Draw buttons and sliders just once
-d3.csv("data/mds_nodes.csv", function(error, nodes) {
+d3.csv("data/mybrain_nodes.csv", function(error, nodes) {
 
     // Network names
     var network_names = [];
@@ -40,8 +40,7 @@ d3.csv("data/mds_nodes.csv", function(error, nodes) {
        .style("width","71px")
        .style("height","90px")
        .style("color","black")
-       .style("background-image",function(d){ 
-          return "linear-gradient(to bottom, #FFF 0px, " + color(d) + " 100%)"})
+       .style("background-color",function(d){ return color(d) })
        .style("font-size","10px")
        .attr("type","button")
        // When any button is clicked, we update visualizations
@@ -56,9 +55,10 @@ update_data()
 
 // The entire thing is wrapped in a function to re-read the data
 function update_data() {  
-  data = d3.csv("data/mds_data.csv", function(data) {
+  data = d3.csv("data/mybrain_data.csv", function(data) {
 
   var networks = [];
+  var network_counts = []
 
   data.forEach(function(d) {
     d.x1 = +d.x1
@@ -77,24 +77,24 @@ function update_data() {
     networks.push(d.network1)
     // The network_pair id will correspond to network_pair
     // list, the groups in histogram down left side. "1,2"
-    d.network_pair_id = [d.network_id1,d.network_id2].sort().join()
+    // d.network_pair_id = [d.network_id1,d.network_id2].sort().join()
   })
 
   var minval = d3.min(data,function(d){ return d.corr })
   var maxval = d3.max(data,function(d){ return d.corr })
 
   networks = d3.set(networks)
+
   //network_pairs = []
   // Network pairs, based on numbers
-  // TODO: read 14 from data, number of networks
   //for (i = 1; i <= 14; i++) {
   //  for (j = 1; j <= 14; j++) {
   //     network_pairs.push([i + "," + j])
   //  } 
   //}
 
- //d3.selectAll(".tooltip").remove()
   d3.selectAll("line.connection").remove()
+  d3.selectAll(".label").remove()
   
   // Get the active buttons - the CHOSEN ONES
   chosen = []
@@ -134,9 +134,14 @@ function update_data() {
     .range([0, 3]) // or use hex values
     .domain([0.0, 0.8]);
 
+   // Nodes will be sized based on number of connections
+   var node_size = d3.scale.linear()
+    .range([5, 10]) 
+    .domain([-1, 30]);
+
   // X: We switch x and y so axial slide is hotdog orientation
   var xValue = function(d) { return d.mdsy;}, // data -> value
-    xScale = d3.scale.linear().range([0, width-150]), // value -> display
+    xScale = d3.scale.linear().range([0, width]), // value -> display
     xMap = function(d) { return xScale(xValue(d));}, // data -> display
     xAxis = d3.svg.axis().scale(xScale).orient("bottom");
 
@@ -153,10 +158,11 @@ function update_data() {
   var brain = d3.selectAll("svg.brain")
 
   // load network nodes data
-  d3.csv("data/mds_nodes.csv", function(error, nodes) {
+  d3.csv("data/mybrain_nodes.csv", function(error, nodes) {
 
     var network_names = [];
 
+    // Format to numbers
     nodes.forEach(function(d) {
       d.mdsx = +d.mdsx
       d.mdsy = +d.mdsy
@@ -175,8 +181,6 @@ function update_data() {
     brain.append("g")
       .attr("class", "x axis")
       .attr("transform", "translate(0," + height + ")")
-      // The MDS coordinates don't add anything - remove them
-      //.call(xAxis)
     .append("text")
       .attr("class", "label")
       .attr("y", -10)
@@ -184,18 +188,48 @@ function update_data() {
       .style("text-anchor", "end")
       .text("Projection 1");
 
-  // y-axis
-  brain.append("g")
+    // y-axis
+    brain.append("g")
       .attr("class", "y axis")
-      // The MDS coordinates don't add anything - remove them
-      //.call(yAxis)
     .append("text")
       .attr("class", "label")
       .attr("transform", "rotate(-90)")
-      .attr("y", -6)
+      .attr("y", 15)
+      .attr("x",-15)
       .attr("dy", ".71em")
       .style("text-anchor", "end")
       .text("Projection 2");
+
+   // Right label
+   brain.append("text")
+      .attr("transform", "translate(0," + height + ")")
+      .attr("class", "label")
+      .attr("y", -40)
+      .attr("x",900)
+      .attr("dy", ".71em")
+      .style("text-anchor", "end")
+      .text("right");
+
+   // Nodes selected text
+   brain.append("text")
+      .attr("transform", "translate(0," + height + ")")
+      .attr("class", "label nodes-selected")
+      .attr("y", -40)
+      .attr("x",200)
+      .attr("dy", ".71em")
+      .style("text-anchor", "end")
+      .text("");
+
+
+   // Connections selected text
+   brain.append("text")
+      .attr("transform", "translate(0," + height + ")")
+      .attr("class", "label connections-selected")
+      .attr("y", -10)
+      .attr("x",200)
+      .attr("dy", ".71em")
+      .style("text-anchor", "end")
+      .text("");
 
    // Figure out threshold from slider
    var thresh =  +d3.selectAll(".thresh").text()
@@ -209,24 +243,24 @@ function update_data() {
       else {if (d.corr <= +thresh){ return true}}
    });
 
-  // Update counts and stats
-  d3.selectAll(".totalconn").text(selected.length)
-  maxy = d3.max(selected,function(d){ return d.corr})
-  minny = d3.min(selected,function(d){ return d.corr})
-  meany = d3.mean(selected,function(d){ return d.corr})
-  d3.selectAll("#maxy").text(maxy.toFixed(2))
-  d3.selectAll("#minny").text(minny.toFixed(2))
-  d3.selectAll("#meany").text(meany.toFixed(2))
-  
-  // Add initial brain connections
-  d3.selectAll("svg.brain").append("g")
+   // Update counts and stats
+   d3.selectAll(".totalconn").text(selected.length)
+   maxy = d3.max(selected,function(d){ return d.corr})
+   minny = d3.min(selected,function(d){ return d.corr})
+   meany = d3.mean(selected,function(d){ return d.corr})
+   if (typeof maxy != 'undefined') { d3.selectAll("#maxy").text(maxy.toFixed(2)) } else { d3.selectAll("#maxy").text("-") }
+   if (typeof minny != 'undefined') { d3.selectAll("#minny").text(minny.toFixed(2)) } else { d3.selectAll("#minny").text("-") }
+   if (typeof meany != 'undefined') { d3.selectAll("#meany").text(meany.toFixed(2))  } else { d3.selectAll("#meany").text("-") }
+
+   // Add initial brain connections
+   d3.selectAll("svg.brain").append("g")
      .attr("transform", "translate(" + margin.left + "," + margin.top + ")")
      .selectAll("line")
     .data(selected)
     .enter().append("line")
       .attr("class",function(d) {
-         if (d.corr > 0) { return "connection positive " + d.network1 + " " + d.network2 }
-         else { return "connection negative "  + d.network1 + " " + d.network2  }} )
+         if (d.corr > 0) { return "connection brain positive " + d.network1 + " " + d.network2 + " roi" + d.key1 + " roi" + d.key2 }
+         else { return "connection brain negative "  + d.network1 + " " + d.network2 + " roi" + d.key1 + " roi" + d.key2 }} )
       // We switch x and y so axial slide is hotdog orientation
       .attr("x1",function(d){ return xScale(d.mdsy1); })
       .attr("x2",function(d){ return xScale(d.mdsy2); })
@@ -235,7 +269,7 @@ function update_data() {
       .attr("active",1)
       .attr("stroke-width",function(d) { return strength(Math.abs(d.corr)) })
       .attr("stroke-opacity", 0.3) 
-      .style("stroke", function(d){ return color(d.network1) })
+      .style("stroke", function(d,i) { return "url(#line-gradient-" + i + ")"})
       .on("mouseover", function(d) {
           tooltip.transition()
                .duration(200)
@@ -248,13 +282,37 @@ function update_data() {
           tooltip.transition()
                .duration(500)
                .style("opacity", 0);
-      });
+      })
 
-  // draw dots
-  brain.selectAll(".dot")
+   // This will make gradient colored lines!
+   d3.selectAll("svg.brain").append("g")
+     .attr("transform", "translate(" + margin.left + "," + margin.top + ")")
+     .selectAll("linearGradient")
+    .data(selected)
+    .enter().append("linearGradient")				
+        .attr("id", function(d,i) { return "line-gradient-" + i })			
+      .attr("class",function(d) {
+         if (d.corr > 0) { return "connection brain positive " + d.network1 + " " + d.network2 + " roi" + d.key1 + " roi" + d.key2 }
+         else { return "connection brain negative "  + d.network1 + " " + d.network2 + " roi" + d.key1 + " roi" + d.key2 }} )
+        .attr("gradientUnits", "userSpaceOnUse")	
+        .attr("x1",function(d){ return xScale(d.mdsy1); })
+        .attr("x2",function(d){ return xScale(d.mdsy2); })
+        .attr("y1",function(d){ return yScale(d.mdsx1); })
+        .attr("y2",function(d){ return yScale(d.mdsx2); })  		
+    .selectAll("stop")						
+        .data(function(d) {return [{ offset: "0%", color: color(d.network1) },		
+               { offset: "50%", color: color(d.network2) } 
+         ]})					
+    .enter().append("stop")			
+        .attr("offset", function(d) { return d.offset })	
+        .attr("stop-color", function(d) {return d.color})
+
+   // draw dots
+   brain.selectAll(".dot")
       .data(nodes)
     .enter().append("circle")
-      .attr("class", "dot")
+      .attr("class",function(d) { return "dot brain roi" + d.keyid })
+      // We will size based on number of connections to it!
       .attr("r", 8)
       .attr("cx", xMap)
       .attr("cy", yMap)
@@ -273,36 +331,55 @@ function update_data() {
          d3.select("#rightPanel")
            .selectAll("img")
            .attr("src", "img/" + d.image)
-
       })
      
       .on("mouseout", function(d) {
           tooltip.transition()
                .duration(500)
                .style("opacity", 0);
+      })
+      // on click - highlight the network
+      .on("click", function(d) {
+
+          // If not highlighted, highlight it
+          if (d3.select(this).classed("highlighted-node") == false) {
+            // Highlight the line
+            d3.selectAll("line.roi" + d.keyid)
+              .classed("highlighted-line",true)
+              .attr("stroke-opacity",1)
+
+            d3.selectAll("circle.roi" + d.keyid)
+              .classed("highlighted-node",true)
+         } 
+         // Otherwise unhighlight it
+         else {
+            d3.selectAll("line.roi" + d.keyid)
+              .classed("highlighted-line",false)
+              .attr("stroke-opacity",0.4)
+
+            d3.selectAll("circle.roi" + d.keyid)
+              .classed("highlighted-node",false)
+ 
+         }
+
+           // Update selections
+           conn_highlighted = d3.selectAll("line.highlighted-line")[0].length
+           node_highlighted = d3.selectAll("circle.highlighted-node")[0].length
+          
+           d3.selectAll(".connections-selected")
+             .text("connections highlighted: " + conn_highlighted)
+
+           d3.selectAll(".nodes-selected")
+             .text("nodes highlighted " + node_highlighted) 
+
       });
 
-    // draw legend
-    var legend = brain.selectAll(".legend")
-      .data(network_names)
-    .enter().append("g")
-      .attr("class", "legend")
-      .attr("transform", function(d, i) { return "translate(100," + i * 20 + ")"; });
-
-  // draw legend colored rectangles
-  legend.append("rect")
-      .attr("x", width - 140)
-      .attr("width", 20)
-      .attr("height", 20)
-      .style("fill", function(d){ return color(d) })     
-
-  // draw legend text
-  legend.append("text")
-      .attr("x", width-150)
-      .attr("y", 9)
-      .attr("dy", ".35em")
-      .style("text-anchor", "end")
-      .text(function(d) { return d })
+     // Change size of nodes by the number of connections to it
+     d3.selectAll(".dot").each(function(d){
+      conns = d3.selectAll("line.roi" + d.keyid)[0]
+         d3.select(this).attr("r",node_size(conns.length-1))
+     })
+     
 
      });
   });
@@ -314,11 +391,11 @@ function update_data() {
 // Show positive connections
 document.getElementById('show_positive').onchange = function() {
     if ( document.getElementById('show_positive').checked === true ) {
-       d3.selectAll(".positive")        
+       d3.selectAll("line.positive")        
       .attr("stroke-opacity",0.4);
     }
     else {
-      d3.selectAll(".positive")        
+      d3.selectAll("line.positive")        
       .attr("stroke-opacity",0);
     }
 }
@@ -327,11 +404,11 @@ document.getElementById('show_positive').onchange = function() {
 document.getElementById('show_negative').onchange = function() {
     
     if ( document.getElementById('show_negative').checked === true ) {
-       d3.selectAll(".negative")        
+       d3.selectAll("line.negative")        
       .attr("stroke-opacity",0.4);
     }
     else {
-      d3.selectAll(".negative")        
+      d3.selectAll("line.negative")        
       .attr("stroke-opacity",0);
     }
 }
@@ -351,6 +428,39 @@ document.getElementById('down').onchange = function() {
 function update_connections(){
   update_data()
 }
+
+// Save SVG
+function save_svg(evt) {
+    var svg = document.getElementsByClassName("brain");
+    var serializer = new XMLSerializer();
+    var svg_blob = new Blob([serializer.serializeToString(svg[0])],
+                            {'type': "image/svg+xml"});
+    var url = URL.createObjectURL(svg_blob);
+    var svg_win = window.open(url, "svg_win");
+}
+
+
+// Reset selection
+function reset_nodes() {
+
+      // Return stroke opacities to original
+      d3.selectAll("line.highlighted-line")
+        // stopped here - issue is seeting stroke opacity to 0.4 and that is also being used to hide the nodes!
+        .style("stroke-opacity",0.4)
+        .classed("highlighted-line",false)
+
+     // Get rid of node class
+     d3.selectAll("circle.highlighted-node")
+        .classed("highlighted-node",false)
+ 
+    // Reset counts to zero
+    d3.selectAll(".connections-selected")
+       .text("")
+
+    d3.selectAll(".nodes-selected")
+       .text("")
+}
+
 
 // Slider
 d3.select('#slider')

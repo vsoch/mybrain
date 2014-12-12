@@ -3,4 +3,4 @@ Web files are in the "web" folder
 
 Show the statistics of a brain functional map in the web browser
 
-UNDER DEVELOPMENT
+For more information, see the (MyBrain Prototyp)[http://www.vbmis.com/bmi/project/mybrain]

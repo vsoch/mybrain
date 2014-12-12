@@ -67,10 +67,8 @@ points = meta[,c(3,4,5)]
 d = dist(points) # euclidean distances between the rows
 fit = cmdscale(d,eig=TRUE, k=2) # k is the number of dim
 fit # view results
-
-# plot solution
-# x = fit$points[,1]
-# y = fit$points[,2]
+x = fit$points[,1]
+y = fit$points[,2]
 # plot(x, y, xlab="Coordinate 1", ylab="Coordinate 2", main="Metric MDS",pch=19,col="orange")
 # text(x, y, labels = meta$network, cex=.7) 
 
@@ -79,7 +77,7 @@ meta$network = gsub("[+]","",meta$network)
 
 # NODE FILE -----------------------------
 node_file = paste(output_file_prefix,"_nodes.csv",sep="")
-cat(file=node_file,"x","y","z","hemisphere","network","network_id","image","mdsx","mdsy","color",sep=",")
+cat(file=node_file,"keyid","x","y","z","hemisphere","network","network_id","image","mdsx","mdsy","color",sep=",")
 cat(file=node_file,"\n",append=TRUE)
 
 for (dd in 1:nrow(meta)){
@@ -89,7 +87,7 @@ for (dd in 1:nrow(meta)){
   x1 = round(x[dd],3)
   y1 = round(y[dd],3)
   color1 = color_vector[dd]
-  vector = c(parcel1,x1,y1,color1)
+  vector = c(dd,parcel1,x1,y1,color1)
   cat(unlist(vector),file=node_file,sep=",",append=TRUE)
   cat(file=node_file,"\n",append=TRUE)
 }
@@ -100,7 +98,7 @@ for (dd in 1:nrow(meta)){
 thresholded[upper.tri(thresholded,diag=TRUE)] = 0
 
 data_file = paste(output_file_prefix,"_data.csv",sep="")
-cat(file=data_file,"x1","y1","z1","hemisphere1","network1","network_id1","image1","mdsx1","mdsy1","color1","x2","y2","z2","hemisphere2","network2","network_id2","image2","mdsx2","mdsy2","color2","corr",sep=",")
+cat(file=data_file,"key1","x1","y1","z1","hemisphere1","network1","network_id1","image1","mdsx1","mdsy1","color1","key2","x2","y2","z2","hemisphere2","network2","network_id2","image2","mdsx2","mdsy2","color2","corr",sep=",")
 cat(file=data_file,"\n",append=TRUE)
 
 for (dd in 1:nrow(meta)){
@@ -119,7 +117,7 @@ for (dd in 1:nrow(meta)){
     strength = round(thresholded[dd,cc],3)
     x2 = round(x[cc],3)
     y2 = round(y[cc],3)
-    vector = c(parcel1,x1,y1,color1,parcel2,x2,y2,color2,strength)
+    vector = c(dd,parcel1,x1,y1,color1,cc,parcel2,x2,y2,color2,strength)
     cat(unlist(vector),file=data_file,sep=",",append=TRUE)
     cat(file=data_file,"\n",append=TRUE)
   }
