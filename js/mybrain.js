@@ -17,7 +17,7 @@ var tooltip = d3.select("body").append("div")
   .style("opacity", 0);
 
 // Draw buttons and sliders just once
-d3.csv("https://rawgithub.com/vsoch/mybrain/gh-pages/data/mybrain_nodes.csv", function(error, nodes) {
+d3.csv("http://vsoch.github.io/mybrain/data/mybrain_nodes.csv", function(error, nodes) {
 
     // Network names
     var network_names = [];
@@ -55,7 +55,7 @@ update_data()
 
 // The entire thing is wrapped in a function to re-read the data
 function update_data() {  
-  data = d3.csv("https://rawgithub.com/vsoch/mybrain/gh-pages/data/mybrain_data.csv", function(data) {
+  data = d3.csv("http://vsoch.github.io/mybrain/data/mybrain_data.csv", function(data) {
 
   var networks = [];
   var network_counts = []
@@ -158,7 +158,7 @@ function update_data() {
   var brain = d3.selectAll("svg.brain")
 
   // load network nodes data
-  d3.csv("https://rawgithub.com/vsoch/mybrain/gh-pages/data/mybrain_nodes.csv", function(error, nodes) {
+  d3.csv("http://vsoch.github.io/mybrain/data/mybrain_nodes.csv", function(error, nodes) {
 
     var network_names = [];
 
